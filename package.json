@@ -1,0 +1,13 @@
+{
+  "name": "tern-closure",
+  "version": "0.1.0",
+  "description": "A Tern plugin adding support for Closure.",
+  "main": "tern-closure.js",
+  "dependencies": {
+    "doctrine": "^0.5.1"
+  },
+  "peerDependencies": {
+    "acorn": "^0.5.0",
+    "tern": "^0.5.1"
+  }
+}
