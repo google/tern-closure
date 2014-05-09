@@ -203,7 +203,8 @@ function interpretComments(node, comment, aval) {
     }
     // TODO: Handle many other tags (inherits, implements, typedef, override...)
     switch (tag.title) {
-      case 'type':
+      case 'type': case 'private': case 'protected': case 'public':
+        // TODO: Add completion filtering based on access restrictions?
         valueType = type;
         valueDoc = tag.description;
         break;
