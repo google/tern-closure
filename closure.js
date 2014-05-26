@@ -56,7 +56,6 @@ infer.registerFunction('closureRequire', function(_self, args, argNodes) {
  * @param {string} text The file text.
  */
 function postParse(ast, text) {
-  console.log('postParse');
   function attachComments(node) {
     // TODO: Do our own comment-finding, handling casts.
     var comments = comment.commentsBefore(text, node.start);
@@ -96,7 +95,6 @@ function postParse(ast, text) {
  * @param {!infer.Scope} scope
  */
 function preInfer(ast, scope) {
-  console.log('preInfer');
   walk.simple(ast, {
     VariableDeclaration: function(node, scope) {
       identifyConstructor(node, node._closureComment);
@@ -124,7 +122,6 @@ function preInfer(ast, scope) {
  * @param {!infer.Scope} scope
  */
 function postInfer(ast, scope) {
-  console.log('postInfer');
   walk.simple(ast, {
     VariableDeclaration: function(node, scope) {
       interpretComments(node, node._closureComment,
@@ -167,7 +164,6 @@ function identifyConstructor(node, comment) {
 
   for (var i = 0; i < comment.tags.length; i++) {
     if (comment.tags[i].title == 'constructor') {
-      console.log('Found constructor');
       // Mark the function type a constructor by creating an object for the
       // prototype.
       // TODO: Handle inheritance.
@@ -220,7 +216,7 @@ function interpretComments(node, comment, aval) {
     }
   }
   var fnType = getFnType(node);
-  if (fnType && (argTypes || returnType)) {
+  if (fnType) {
     // This comment applies to a function, and we have information to apply
     // to that function type.
     applyFnTypeInfo(fnType, argTypes, argDocs, returnType, returnDoc);
@@ -231,8 +227,6 @@ function interpretComments(node, comment, aval) {
     // This comment applies to a variable or property.
     valueType.propagate(aval);
     setDoc(aval, comment.description || valueDoc);
-  } else {
-    console.log('No types applied');
   }
 }
 
@@ -335,7 +329,6 @@ function getExpressionAval(typeExpr, innerType) {
  * @return {!infer.AVal}
  */
 function getQualifiedType(name, innerType) {
-  console.log('getQualifiedType');
   // Handle primitives.
   if (/^(number|integer)$/i.test(name)) {
     return infer.cx().num;
@@ -433,7 +426,5 @@ function getFnType(node) {
 function setDoc(type, doc) {
   if (type instanceof infer.AVal) {
     type.doc = doc;
-  } else {
-    console.log('Setting doc on non-aval!');
   }
 };
