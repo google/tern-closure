@@ -23,7 +23,6 @@ tern.registerPlugin('closure', function() {
   return {
     passes: {
       'postParse': postParse,
-      'preInfer': preInfer,
       'postInfer': postInfer
     },
     defs: defs
@@ -87,35 +86,6 @@ function postParse(ast, text) {
 
 
 /**
- * Identifies and initializes contructors before Tern's type inference pass. We
- * apply most JSDoc type information after the type inference pass initializes
- * the values. However, Tern misses pretty badly on constructors, so we identify
- * them beforehand.
- * @param {!acorn.Node} ast
- * @param {!infer.Scope} scope
- */
-function preInfer(ast, scope) {
-  walk.simple(ast, {
-    VariableDeclaration: function(node, scope) {
-      identifyConstructor(node, node._closureComment);
-    },
-    FunctionDeclaration: function(node, scope) {
-      identifyConstructor(node, node._closureComment);
-    },
-    AssignmentExpression: function(node, scope) {
-      identifyConstructor(node, node._closureComment);
-    },
-    ObjectExpression: function(node, scope) {
-      for (var i = 0; i < node.properties.length; ++i) {
-        var prop = node.properties[i], key = prop.key;
-        identifyConstructor(prop, key._closureComment);
-      }
-    }
-  }, infer.searchVisitor, scope);
-};
-
-
-/**
  * Applies type information from JSDoc comments to the initialized values after
  * Tern's type inference pass.
  * @param {!acorn.Node} ast
@@ -143,36 +113,6 @@ function postInfer(ast, scope) {
       }
     }
   }, infer.searchVisitor, scope);
-}
-
-
-/**
- * Looks for a constructor tag in the comments before a function and marks the
- * function as a constructor.
- * @param {!acorn.Node} node
- * @param {{description: string, tags: Array}} comment The Doctrine-parsed
- *     comment before the node if present.
- */
-function identifyConstructor(node, comment) {
-  if (!comment) {
-    return;
-  }
-  var fnType = getFnType(node);
-  if (!fnType) {
-    return;
-  }
-
-  for (var i = 0; i < comment.tags.length; i++) {
-    if (comment.tags[i].title == 'constructor') {
-      // Mark the function type a constructor by creating an object for the
-      // prototype.
-      // TODO: Handle inheritance.
-      // TODO: Get the name in here, possibly in postInfer.
-      var prototypeAval = fnType.defProp('prototype', node);
-      var proto = new infer.Obj(true);
-      proto.propagate(prototypeAval);
-    }
-  }
 }
 
 
