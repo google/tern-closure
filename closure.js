@@ -129,8 +129,11 @@ function interpretComments(node, comment, aval) {
   if (!comment) {
     return;
   }
-  var argTypes, returnType, valueType;
-  var argDocs, returnDoc, valueDoc;
+  // TODO: Refactor to have an object representation of the comment info.
+  var valueType, valueDoc;
+  var argTypes, returnType;
+  var argDocs, returnDoc;
+  var superType;
   for (var i = 0; i < comment.tags.length; i++) {
     var tag = comment.tags[i];
     var type;
@@ -153,13 +156,19 @@ function interpretComments(node, comment, aval) {
         (argDocs || (argDocs = Object.create(null)))[tag.name] =
             tag.description;
         break;
+      case 'extends':
+        superType = type;
+        break;
     }
   }
+  // TODO: If we have function-specific type info, force the right hand side
+  // to be a function AVal (i.e. assume RHS evaluates to function).
   var fnType = getFnType(node);
   if (fnType) {
     // This comment applies to a function, and we have information to apply
     // to that function type.
-    applyFnTypeInfo(fnType, argTypes, argDocs, returnType, returnDoc);
+    applyFnTypeInfo(
+        fnType, argTypes, argDocs, returnType, returnDoc, superType);
     if (comment.description) {
       fnType.doc = comment.description;
     }
@@ -180,8 +189,10 @@ function interpretComments(node, comment, aval) {
  * @param {Object.<string>} argDocs Doc comments for the arguments.
  * @param {infer.AVal} returnType The parsed return type.
  * @param {string} returnDoc Doc comments for the return value.
+ * @param {infer.AVal} supterType The type of the superclass, if any.
  */
-function applyFnTypeInfo(fnType, argTypes, argDocs, returnType, returnDoc) {
+function applyFnTypeInfo(
+    fnType, argTypes, argDocs, returnType, returnDoc, superType) {
   if (argTypes) {
     for (var i = 0; i < fnType.argNames.length; i++) {
       var name = fnType.argNames[i];
@@ -197,6 +208,9 @@ function applyFnTypeInfo(fnType, argTypes, argDocs, returnType, returnDoc) {
   if (returnType) {
     returnType.propagate(fnType.retval);
     setDoc(fnType.retval, returnDoc);
+  }
+  if (superType && fnType.hasProp('prototype', false)) {
+    superType.propagate(new IsSuperclassInstance(fnType));
   }
 }
 
@@ -290,6 +304,7 @@ function getQualifiedType(name, innerType) {
     return objType;
   }
 
+  // This is a class instance.
   var ctorType = defineQualifiedName(name);
   if (!(ctorType.getType() instanceof infer.Fn)) {
     // Create a fake constructor function to stand in for the real one.
@@ -368,3 +383,30 @@ function setDoc(type, doc) {
     type.doc = doc;
   }
 };
+
+
+/**
+ * A constraint for specifying that an AVal is the instance of the superclass of
+ * the target function type (i.e. the AVal object type should be used as the
+ * function's prototype's proto).
+ */
+var IsSuperclassInstance = infer.constraint('targetFn', {
+  addType: function(newProto, weight) {
+    // TODO: Handle if target prototype AVal changes by keeping the last added
+    // proto and applying it to the new type.
+    if (!(newProto instanceof infer.Obj) ||
+        !this.targetFn.hasProp('prototype', false)) {
+      return;
+    }
+    var targetPrototype = this.targetFn.getProp('prototype').getType();
+    if (!(targetPrototype instanceof infer.Obj)) {
+      console.log('Forcing proto on non-object!');
+      return;
+    }
+    // Detach the old proto and replace it with the new one.
+    targetPrototype.proto.unregPropHandler(targetPrototype);
+    targetPrototype.proto = newProto;
+    targetPrototype.proto.forAllProps(targetPrototype);
+    targetPrototype.maybeUnregProtoPropHandler();
+  }
+});
