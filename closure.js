@@ -3,8 +3,8 @@ var infer = require('tern/lib/infer');
 var tern = require('tern/lib/tern');
 var getCommentsBefore = require('tern/lib/comment').commentsBefore;
 var walk = require('acorn/util/walk');
-var Comment = require('lib/comment');
-var TypeManager = require('lib/typemanager');
+var Comment = require('./lib/comment');
+var TypeManager = require('./lib/typemanager');
 
 var typeManager = new TypeManager();
 
