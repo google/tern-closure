@@ -8,6 +8,6 @@
     "doctrine": "git://github.com/Constellation/doctrine"
   },
   "peerDependencies": {
-    "tern": "^0.5.1"
+    "tern": "^0.6.2"
   }
 }
