@@ -3,36 +3,62 @@
 // plugin=doc_comment null
 
 /** @type {number} */
-var a;
-a; //: number
+var num;
+num; //: number
 
 /** @type {boolean} */
-var b;
-b; //: bool
+var bool;
+bool; //: bool
 
 /** @type {string} */
-var c;
-c; //: string
+var str;
+str; //: string
 
 /** @type {Array} */
-var d;
-d; //: [?]
+var arr;
+arr; //: [?]
+
+/** @type {Array.<number>} */
+var numArr;
+numArr; //: [number]
+numArr[0]; //: number
 
 /** @type {Object} */
-var e;
-e; //: {}
+var obj;
+obj; //: {}
+
+/** @type {Object.<number>} */
+var numObj;
+numObj; //: {}
+numObj['prop']; //: number
+
+/** @type {null} */
+var nullLiteral;
+nullLiteral; //: ?
+
+/** @type {undefined} */
+var undefinedLiteral;
+undefinedLiteral; //: ?
+
+/** @type {?} */
+var nullableLiteral;
+nullableLiteral; //: ?
+
+/** @type {*} */
+var allLiteral;
+allLiteral; //: ?
 
 // Tests applying a not-yet-defined class.
 /** @type {MyClass} */
-var f;
-f; //: MyClass
+var inst;
+inst; //: MyClass
 // Tests that a stand-in function type has been created.
 MyClass; //: fn()
 
 // Tests applying a namespaced class.
 /** @type {name.spaced.Class} */
-var g;
-g; //: name.spaced.Class
+var nameInst;
+nameInst; //: name.spaced.Class
 name; //: name
 name.spaced; //: name.spaced
 name.spaced.Class; //: fn()
@@ -41,9 +67,9 @@ name.spaced.Class; //: fn()
  * Docs for this var.
  * @type {Blah}
  */
-var h;
-h; //doc: Docs for this var.
+var docs;
+docs; //doc: Docs for this var.
 
 /** @type {Blah} Some docs. */
-var i;
-i; //doc: Some docs.
+var shortDocs;
+shortDocs; //doc: Some docs.
