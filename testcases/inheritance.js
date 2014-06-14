@@ -6,6 +6,7 @@ goog.provide('name.space.Parent');
 goog.provide('name.space.Child');
 goog.provide('name.space.Grandchild');
 goog.provide('name.space.Sibling');
+goog.provide('name.space.Cousin');
 
 /**
  * The parent class.
@@ -32,6 +33,15 @@ name.space.Parent.prototype.parentMethod = function() {
 };
 
 /**
+ * A method to override.
+ * @param {ParamType} param The param type.
+ * @return {ReturnType} The return type.
+ */
+name.space.Parent.prototype.overrideMethod = function(param) {
+  return retVal;
+}
+
+/**
  * The child class.
  * @extends {name.space.Parent}
  * @constructor
@@ -54,6 +64,14 @@ name.space.Child.prototype.childMethod = function() {
   this.siblingProperty; //: ?
   this.siblingMethod; //: ?
 };
+
+/** @override */
+name.space.Child.prototype.overrideMethod = function(param) {
+  param; //: ParamType
+  return retVal;
+}
+name.space.Child.prototype.overrideMethod; //: fn(param: ParamType) -> ReturnType
+name.space.Child.prototype.overrideMethod; //doc: A method to override.
 
 /**
  * The grandchild class.
@@ -79,6 +97,14 @@ name.space.Grandchild.prototype.grandchildMethod = function() {
   this.siblingMethod; //: ?
 };
 
+/** @override */
+name.space.Grandchild.prototype.overrideMethod = function(param) {
+  param; //: ParamType
+  return retVal;
+}
+name.space.Grandchild.prototype.overrideMethod; //: fn(param: ParamType) -> ReturnType
+name.space.Grandchild.prototype.overrideMethod; //doc: A method to override.
+
 /**
  * The sibling class.
  * @extends {name.space.Parent}
@@ -102,3 +128,24 @@ name.space.Sibling.prototype.siblingMethod = function() {
   this.siblingProperty; //: Property
   this.siblingMethod; //: fn()
 };
+
+/**
+ * The cousin class.
+ * @extends {name.space.Sibling}
+ * @constructor
+ * @struct
+ */
+name.space.Cousin = function() {
+  /** @protected {Property} The sibling property. */
+  this.siblingProperty = siblingProp;
+};
+goog.inherits(name.space.Cousin, name.space.Parent);
+
+/** @override */
+name.space.Cousin.prototype.overrideMethod = function(param) {
+  param; //: ParamType
+  return retVal;
+}
+name.space.Cousin.prototype.overrideMethod; //: fn(param: ParamType) -> ReturnType
+name.space.Cousin.prototype.overrideMethod; //doc: A method to override.
+

@@ -167,7 +167,7 @@ function applyFnTypeInfo(fnType, comment) {
     setDoc(fnType.retval, comment.returnDoc);
   }
   if (comment.superType && fnType.hasProp('prototype', false)) {
-    comment.superType.propagate(new IsSuperclassInstance(fnType));
+    comment.superType.propagate(new IsParentInstance(fnType));
   }
 }
 
@@ -216,23 +216,73 @@ function setDoc(type, doc) {
  * the target function type (i.e. the AVal object type should be used as the
  * function's prototype's proto).
  */
-var IsSuperclassInstance = infer.constraint('targetFn', {
-  addType: function(newProto, weight) {
-    // TODO: Handle if target prototype AVal changes by keeping the last added
-    // proto and applying it to the new type.
-    if (!(newProto instanceof infer.Obj) ||
-        !this.targetFn.hasProp('prototype', false)) {
+var IsParentInstance = infer.constraint('childCtor', {
+  addType: function(parentInstanceType, weight) {
+    if (!(parentInstanceType instanceof infer.Obj) ||
+        !this.childCtor.hasProp('prototype', false)) {
       return;
     }
-    var targetPrototype = this.targetFn.getProp('prototype').getType();
-    if (!(targetPrototype instanceof infer.Obj)) {
+    var childProtoType = this.childCtor.getProp('prototype').getType();
+    if (!(childProtoType instanceof infer.Obj)) {
       console.log('Forcing proto on non-object!');
       return;
     }
     // Detach the old proto and replace it with the new one.
-    targetPrototype.proto.unregPropHandler(targetPrototype);
-    targetPrototype.proto = newProto;
-    targetPrototype.proto.forAllProps(targetPrototype);
-    targetPrototype.maybeUnregProtoPropHandler();
+    if (childProtoType.proto.onNewProp) {
+      childProtoType.proto.unregPropHandler(childProtoType);
+      parentInstanceType.forAllProps(childProtoType);
+    }
+    childProtoType.proto = parentInstanceType;
+
+    // Set up for inheritance of type information for overriden methods.
+    childProtoType.forAllProps(function(prop, val, local) {
+      if (local) {
+        // For each child method, look for overriden methods up the prototype
+        // chain.
+        var protoPropVal = childProtoType.proto.hasProp(prop);
+        if (protoPropVal && !val._closureHasParent) {
+          protoPropVal.propagate(new IsParentMethod(val));
+          val._closureHasParent = true;
+        }
+      } else {
+        // As properties are added up the chain (parent classes are loaded),
+        // watch for overriden methods.
+        var localPropVal =
+            childProtoType.proto.hasProp(prop, false /* searchProto */);
+        if (localPropVal && !localPropVal._closureHasParent) {
+          val.propagate(new IsParentMethod(localPropVal));
+          localPropVal._closureHasParent = true;
+        }
+      }
+    });
+  }
+});
+
+
+/**
+ * A constraint for specifying that a superclass method is overriden by the
+ * target method AVal. This sets up forwarding of parameter types, return types,
+ * and description information.
+ */
+var IsParentMethod = infer.constraint('childMethod', {
+  addType: function(parentMethodType, weight) {
+    var childMethodType = this.childMethod.getType();
+    if (!(childMethodType instanceof infer.Fn) ||
+        !(parentMethodType instanceof infer.Fn)) {
+      return;
+    }
+    if (!childMethodType.doc) {
+      childMethodType.doc = parentMethodType.doc;
+    }
+    if (parentMethodType.retval) {
+      parentMethodType.retval.propagate(childMethodType.retval);
+    }
+    if (parentMethodType.args) {
+      for (var i = 0; i < parentMethodType.args.length; i++) {
+        if (childMethodType.args[i]) {
+          parentMethodType.args[i].propagate(childMethodType.args[i]);
+        }
+      }
+    }
   }
 });
