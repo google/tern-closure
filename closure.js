@@ -248,7 +248,7 @@ var IsParentInstance = infer.constraint('childCtor', {
         // As properties are added up the chain (parent classes are loaded),
         // watch for overriden methods.
         var localPropVal =
-            childProtoType.proto.hasProp(prop, false /* searchProto */);
+            childProtoType.hasProp(prop, false /* searchProto */);
         if (localPropVal && !localPropVal._closureHasParent) {
           val.propagate(new IsParentMethod(localPropVal));
           localPropVal._closureHasParent = true;
