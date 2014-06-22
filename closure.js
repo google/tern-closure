@@ -6,10 +6,14 @@ var walk = require('acorn/util/walk');
 var Comment = require('./lib/comment');
 var TypeManager = require('./lib/typemanager');
 
-var typeManager = new TypeManager();
+
+var typeManager;
 
 
-tern.registerPlugin('closure', function() {
+tern.registerPlugin('closure', function(server, options) {
+  var Finder = require('./lib/finder/grep');
+  typeManager = new TypeManager(new Finder(options.finder), server);
+
   var defs = {
     '!name': 'closure',
     goog: {
@@ -218,6 +222,7 @@ function setDoc(type, doc) {
  */
 var IsParentInstance = infer.constraint('childCtor', {
   addType: function(parentInstanceType, weight) {
+    // TODO: Set up Class.base to point to parent class.
     if (!(parentInstanceType instanceof infer.Obj) ||
         !this.childCtor.hasProp('prototype', false)) {
       return;
@@ -271,6 +276,7 @@ var IsParentMethod = infer.constraint('childMethod', {
         !(parentMethodType instanceof infer.Fn)) {
       return;
     }
+    // TODO: Solve issue with propagating docs further down the chain.
     if (!childMethodType.doc) {
       childMethodType.doc = parentMethodType.doc;
     }
