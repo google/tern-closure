@@ -11,8 +11,19 @@ var typeManager;
 
 
 tern.registerPlugin('closure', function(server, options) {
+  var finder = null;
+  if (options.finder) {
+    var Finder;
+    try {
+      Finder = require('./lib/finder/' + options.finder.name);
+    } catch (e) {
+      Finder = require(options.finder.name);
+    }
+    finder = new Finder(server.options.projectDir, options.finder.options);
+  }
+
   var Finder = require('./lib/finder/grep');
-  typeManager = new TypeManager(new Finder(options.finder), server);
+  typeManager = new TypeManager(server, finder);
 
   var defs = {
     '!name': 'closure',
