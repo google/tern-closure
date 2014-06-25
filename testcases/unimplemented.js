@@ -14,11 +14,11 @@ nonNullable;//: MyClass
 
 /** @type {(MyClass|YourClass)} */
 var union;
-union;//: [object Object]
+union;//: YourClass
 
 /** @type {(!MyClass|!YourClass|{prop:(Blah|Blam)})} */
 var nested;
-nested; //: [object Object]
+nested; //: YourClass
 
 /**
  * @param {ParamType=} opt_param
