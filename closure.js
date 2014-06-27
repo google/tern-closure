@@ -78,9 +78,6 @@ function postParse(ast, text) {
     }
   }
 
-  // TODO: Handle property declarations with no initialization, e.g.
-  // /** @type {BlahType} */ 
-  // Class.prototype.blah;
   walk.simple(ast, {
     VariableDeclaration: attachComments,
     FunctionDeclaration: attachComments,
@@ -223,8 +220,13 @@ function applyFnTypeInfo(fnType, comment) {
     comment.returnType.propagate(fnType.retval);
     setDoc(fnType.retval, comment.returnDoc);
   }
-  if (comment.superType && fnType.hasProp('prototype', false)) {
+  if (comment.superType) {
     comment.superType.propagate(new constraints.IsParentInstance(fnType));
+  }
+  if (comment.interfaces) {
+    for (var i = 0; i < comment.interfaces.length; i++) {
+      comment.interfaces[i].propagate(new constraints.IsInterface(fnType));
+    }
   }
 }
 
