@@ -25,4 +25,28 @@ myFn(); //doc: The return value.
  */
 function secondFn() {
 }
+secondFn; //: fn()
 secondFn; //doc: This function just has docs.
+
+/**
+ * This is a function, with no initialization.
+ * @param {ParamType} param
+ * @return {ReturnType}
+ */
+var noInitFn;
+noInitFn; //: fn(param: ParamType) -> ReturnType
+
+/**
+ * We assume a commented, uninitialized value with no type info is a function
+ * with no parameters and no return value.
+ */
+var nullFn;
+nullFn; //: fn()
+
+/**
+ * A commented value initialized with the unknown return type of a function is
+ * assumed to be a function.
+ * @param {ParamType} param
+ */
+var constructedFn = unknownFn();
+constructedFn; //: fn(param: ParamType)

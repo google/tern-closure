@@ -169,18 +169,33 @@ function interpretComments(node, comment, aval) {
     return;
   }
   comment.parse(typeManager);
-  // TODO: If we have function-specific type info, force the right hand side
-  // to be a function AVal (i.e. assume RHS evaluates to function).
-  var fnType = getFnType(node);
-  if (fnType) {
+  if (comment.valueType) {
+    // This comment applies to a variable or property.
+    comment.valueType.propagate(aval);
+    setDoc(aval, comment.description || comment.valueDoc);
+  } else if (!('valueType' in comment)){
+    // Without a value type, assume the doc comment applies to a function.
+    var fnType = getFnType(node);
+    if (!fnType) {
+      // If a function type isn't found, create a synthetic one and propagate it
+      // to the target AVal.
+      var args = [];
+      var argNames = [];
+      if (comment.argNames) {
+        for (var i = 0; i < comment.argNames.length; i++) {
+          argNames.push(comment.argNames[i]);
+          args.push(new infer.AVal());
+        }
+      }
+      // TODO: Get a name in here. (see AssignmentExpression in infer.js)
+      fnType = new infer.Fn(null /* name */, new infer.AVal() /* self */, args,
+          argNames, new infer.AVal() /* retVal */);
+      fnType.propagate(aval);
+    }
     applyFnTypeInfo(fnType, comment);
     if (comment.description) {
       fnType.doc = comment.description;
     }
-  } else if (comment.valueType) {
-    // This comment applies to a variable or property.
-    comment.valueType.propagate(aval);
-    setDoc(aval, comment.description || comment.valueDoc);
   }
 }
 
@@ -192,13 +207,13 @@ function interpretComments(node, comment, aval) {
  * @param {!Comment} comment The comment type info.
  */
 function applyFnTypeInfo(fnType, comment) {
-  if (comment.argTypes) {
+  if (comment.args) {
     for (var i = 0; i < fnType.argNames.length; i++) {
       var name = fnType.argNames[i];
-      var argType = comment.argTypes[name];
+      var arg = comment.args[name];
       // Propagate the documented type info to the inferred argument type.
-      if (argType) {
-        argType.propagate(fnType.args[i]);
+      if (arg) {
+        arg.propagate(fnType.args[i]);
         setDoc(fnType.args[i], comment.argDocs[name]);
       }
     }
