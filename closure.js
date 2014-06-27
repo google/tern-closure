@@ -93,6 +93,22 @@ function postParse(ast, text) {
       for (var i = 0; i < node.properties.length; ++i) {
         attachComments(node.properties[i].key);
       }
+    },
+    MemberExpression: function(node) {
+      // Grab "dead end" declarations: Blah.prototype.prop;
+      if (text.charAt(node.property.end) == ';') {
+        var testFn = function(t, n) {
+          return n.start <= node.start - 1;
+        };
+        // If the expression value is not being used in any way, it's just a
+        // declaration.
+        // TODO: Assess perf impact of this approach, maybe optimize.
+        var found = walk.findNodeAround(ast, node.end - 1, testFn);
+        if (found.node.type == 'Program' ||
+            found.node.type == 'BlockStatement') {
+          attachComments(node);
+        }
+      }
     }
   });
 }
@@ -123,6 +139,16 @@ function postInfer(ast, scope) {
         var prop = node.properties[i], key = prop.key;
         interpretComments(
             prop, key._closureComment, node.objType.getProp(key.name));
+      }
+    },
+    MemberExpression: function(node, scope) {
+      if (node._closureComment) {
+        var obj = infer.expressionType({node: node.object, state: scope});
+        // Create and populate an AVal with the comment type information.
+        var propAval = new infer.AVal();
+        interpretComments(node, node._closureComment, propAval);
+        obj.propagate(new infer.PropHasSubset(
+              node.property.name, propAval, node.property));
       }
     }
   }, infer.searchVisitor, scope);

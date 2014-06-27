@@ -63,6 +63,11 @@ name; //: name
 name.spaced; //: name.spaced
 name.spaced.Class; //: fn()
 
+// Tests declaration without initialization.
+/** @type {MyType} */
+name.prop;
+name.prop; //: MyType
+
 /**
  * Docs for this var.
  * @type {Blah}
