@@ -1,11 +1,11 @@
 // Copyright 2014 Google Inc. All rights reserved.
-// 
+//
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
-// 
+//
 //     http://www.apache.org/licenses/LICENSE-2.0
-// 
+//
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,7 +37,6 @@ tern.registerPlugin('closure', function(server, options) {
     finder = new Finder(server.options.projectDir, options.finder.options);
   }
 
-  var Finder = require('./lib/finder/grep');
   typeManager = new TypeManager(server, finder);
 
   var defs = {
@@ -45,7 +44,7 @@ tern.registerPlugin('closure', function(server, options) {
     goog: {
       provide: 'fn(name: string) -> !custom:closureProvide',
       require: 'fn(name: string) -> !custom:closureRequire'
-    },
+    }
   };
 
   return {
@@ -59,18 +58,20 @@ tern.registerPlugin('closure', function(server, options) {
 
 
 infer.registerFunction('closureProvide', function(_self, args, argNodes) {
-  if (!argNodes || !argNodes.length || argNodes[0].type != "Literal" ||
-      typeof argNodes[0].value != "string")
+  if (!argNodes || !argNodes.length || argNodes[0].type != 'Literal' ||
+      typeof argNodes[0].value != 'string') {
     return infer.ANull;
+  }
   typeManager.defineQualifiedName(argNodes[0].value);
   return infer.ANull;
 });
 
 
 infer.registerFunction('closureRequire', function(_self, args, argNodes) {
-  if (!argNodes || !argNodes.length || argNodes[0].type != "Literal" ||
-      typeof argNodes[0].value != "string")
+  if (!argNodes || !argNodes.length || argNodes[0].type != 'Literal' ||
+      typeof argNodes[0].value != 'string') {
     return infer.ANull;
+  }
   typeManager.defineQualifiedName(argNodes[0].value);
   return infer.ANull;
 });
@@ -145,7 +146,7 @@ function postInfer(ast, scope) {
       interpretComments(node, node._closureComment,
           infer.expressionType({node: node.left, state: scope}));
     },
-    ObjectExpression: function(node, scope) {
+    ObjectExpression: function(node) {
       for (var i = 0; i < node.properties.length; ++i) {
         var prop = node.properties[i], key = prop.key;
         interpretComments(
@@ -159,7 +160,7 @@ function postInfer(ast, scope) {
         var propAval = new infer.AVal();
         interpretComments(node, node._closureComment, propAval);
         obj.propagate(new infer.PropHasSubset(
-              node.property.name, propAval, node.property));
+            node.property.name, propAval, node.property));
       }
     }
   }, infer.searchVisitor, scope);
@@ -184,7 +185,7 @@ function interpretComments(node, comment, aval) {
     // This comment applies to a variable or property.
     comment.valueType.propagate(aval);
     setDoc(aval, comment.description || comment.valueDoc);
-  } else if (!('valueType' in comment)){
+  } else if (!('valueType' in comment)) {
     // Without a value type, assume the doc comment applies to a function.
     var fnType = getFnType(node);
     if (!fnType) {
@@ -238,8 +239,8 @@ function applyFnTypeInfo(fnType, comment) {
     comment.superType.propagate(new constraints.IsParentInstance(fnType));
   }
   if (comment.interfaces) {
-    for (var i = 0; i < comment.interfaces.length; i++) {
-      comment.interfaces[i].propagate(new constraints.IsInterface(fnType));
+    for (var j = 0; j < comment.interfaces.length; j++) {
+      comment.interfaces[j].propagate(new constraints.IsInterface(fnType));
     }
   }
 }
@@ -252,17 +253,17 @@ function applyFnTypeInfo(fnType, comment) {
  * @return {infer.Fn}
  */
 function getFnType(node) {
-  if (node.type == "VariableDeclaration") {
+  if (node.type == 'VariableDeclaration') {
     var decl = node.declarations[0];
-    if (decl.init && decl.init.type == "FunctionExpression") {
+    if (decl.init && decl.init.type == 'FunctionExpression') {
       return decl.init.body.scope.fnType;
     }
-  } else if (node.type == "FunctionDeclaration") {
+  } else if (node.type == 'FunctionDeclaration') {
     return node.body.scope.fnType;
-  } else if (node.type == "AssignmentExpression" &&
-      node.right.type == "FunctionExpression") {
+  } else if (node.type == 'AssignmentExpression' &&
+      node.right.type == 'FunctionExpression') {
     return node.right.body.scope.fnType;
-  } else if (node.value && node.value.type == "FunctionExpression") {
+  } else if (node.value && node.value.type == 'FunctionExpression') {
     // Object property.
     return node.value.body.scope.fnType;
   }
@@ -281,4 +282,4 @@ function setDoc(type, doc) {
   if (type instanceof infer.AVal) {
     type.doc = doc;
   }
-};
+}
