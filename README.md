@@ -14,10 +14,9 @@ The easiest way to install tern-closure is to use a recent version of
 simply run
 
 ```
-$ npm install google/tern-closure
+$ npm install tern-closure
 ```
 
-<!-- TODO: Update this to use npmjs.org package rather than repo. -->
 <!-- TODO: Mention global installation once supported. -->
 <!-- TODO: Rundown of setup with common plugins. -->
 
