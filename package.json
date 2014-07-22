@@ -10,5 +10,17 @@
   },
   "peerDependencies": {
     "tern": "^0.6.2"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/google/tern-closure.git"
+  },
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/google/tern-closure",
+  "bugs": "https://github.com/google/tern-closure/issues",
+  "keywords": [
+    "tern",
+    "closure"
+  ],
+  "author": "Josh Giles <joshgiles@google.com>"
 }
