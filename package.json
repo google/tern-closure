@@ -22,5 +22,8 @@
     "tern",
     "closure"
   ],
+  "scripts": {
+    "test": "node ./test/runcases.js"
+  },
   "author": "Josh Giles <joshgiles@google.com>"
 }

@@ -1,5 +1,5 @@
 --recurse=.
---exclude_directories=node_modules,testcases
+--exclude_directories=node_modules,test/cases
 --strict
 # No 'No docs found for member' errors
 # No 'opt_* prefix on optional param names'

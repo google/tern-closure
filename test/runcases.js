@@ -14,8 +14,8 @@
 
 var path = require('path');
 var runcases = require('tern/test/runcases');
-require('closure');
+require('../closure');
 
 var filter = process.argv[2];
-var caseDir = path.resolve(__dirname, 'testcases');
+var caseDir = path.resolve(__dirname, 'cases');
 runcases.runTests(filter, caseDir);
