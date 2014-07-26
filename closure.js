@@ -85,7 +85,7 @@ infer.registerFunction('closureRequire', function(_self, args, argNodes) {
  */
 function postParse(ast, text) {
   function attachComments(node) {
-    // TODO: Do our own comment-finding, handling casts.
+    // TODO: Do our own comment-finding, handling casts. #12
     var comments = getCommentsBefore(text, node.start);
     if (comments) {
       node._closureComment =
@@ -199,7 +199,8 @@ function interpretComments(node, comment, aval) {
           args.push(new infer.AVal());
         }
       }
-      // TODO: Get a name in here. (see AssignmentExpression in infer.js)
+      // TODO: Get a name in here if constructor.
+      // (see AssignmentExpression in infer.js)
       fnType = new infer.Fn(null /* name */, new infer.AVal() /* self */, args,
           argNames, new infer.AVal() /* retVal */);
       fnType.propagate(aval);
