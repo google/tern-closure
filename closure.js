@@ -34,7 +34,7 @@ tern.registerPlugin('closure', function(server, options) {
     } catch (e) {
       Finder = require(options.finder.name);
     }
-    finder = new Finder(server.options.projectDir, options.finder.options);
+    finder = new Finder(server.options.projectDir, options.finder);
   }
 
   typeManager = new TypeManager(server, finder);
