@@ -23,11 +23,20 @@ var TypeManager = require('./lib/typemanager');
 
 
 var typeManager;
+var debug;
 
 
 tern.registerPlugin('closure', function(server, options) {
+  if (options.hasOwnProperty('debug')) {
+    debug = options.debug;
+  } else {
+    debug = server.options.debug;
+  }
   var finder = null;
   if (options.finder) {
+    if (!options.finder.hasOwnProperty('debug')) {
+      options.finder.debug = debug;
+    }
     var Finder;
     try {
       Finder = require('./lib/finder/' + options.finder.name);
@@ -133,6 +142,9 @@ function postParse(ast, text) {
  * @param {!infer.Scope} scope
  */
 function postInfer(ast, scope) {
+  if (debug) {
+    console.log('closure: postInfer ' + infer.cx().curOrigin);
+  }
   walk.simple(ast, {
     VariableDeclaration: function(node, scope) {
       interpretComments(node, node._closureComment,
