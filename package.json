@@ -6,7 +6,7 @@
   "dependencies": {
     "acorn": "^0.5.0",
     "carrier": "^0.1.13",
-    "doctrine": "git://github.com/Constellation/doctrine"
+    "doctrine": "^0.5.2"
   },
   "peerDependencies": {
     "tern": "^0.6.2"
