@@ -16,11 +16,10 @@
 
 var acorn = require('acorn/acorn');
 var walk = require('acorn/util/walk');
-var Comment = require('./lib/comment');
 var core = require('./lib/core');
 // We defer loading of modules that depend on core Tern modules until after the
 // core module is initialized.
-var constraints, TypeManager;
+var constraints, TypeManager, Comment;
 var infer;
 
 
@@ -33,6 +32,7 @@ exports.initialize = function(ternDir) {
   infer = core.infer;
   constraints = require('./lib/constraints');
   TypeManager = require('./lib/typemanager');
+  Comment = require('./lib/comment');
 
   core.tern.registerPlugin('closure', function(server, options) {
     if (options.hasOwnProperty('debug')) {
@@ -82,7 +82,8 @@ exports.initialize = function(ternDir) {
         typeof argNodes[0].value != 'string') {
       return infer.ANull;
     }
-    typeManager.defType(argNodes[0].value);
+    typeManager.defType(argNodes[0].value, TypeManager.Reason.PROVIDE,
+        TypeManager.Visibility.PUBLIC);
     return infer.ANull;
   });
 
@@ -92,7 +93,8 @@ exports.initialize = function(ternDir) {
         typeof argNodes[0].value != 'string') {
       return infer.ANull;
     }
-    typeManager.defType(argNodes[0].value);
+    typeManager.defType(argNodes[0].value, TypeManager.Reason.REQUIRE,
+        TypeManager.Visibility.PRIVATE);
     return infer.ANull;
   });
 };
