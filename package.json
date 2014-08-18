@@ -9,7 +9,7 @@
     "doctrine": "^0.5.2"
   },
   "peerDependencies": {
-    "tern": "^0.6.2"
+    "tern": "^0.7.0"
   },
   "repository": {
     "type": "git",
