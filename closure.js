@@ -14,6 +14,7 @@
 
 'use strict';
 
+var acorn = require('acorn/acorn');
 var walk = require('acorn/util/walk');
 var Comment = require('./lib/comment');
 var core = require('./lib/core');
@@ -66,7 +67,8 @@ exports.initialize = function(ternDir) {
     return {
       passes: {
         'postParse': postParse,
-        'postInfer': postInfer
+        'postInfer': postInfer,
+        'completion': completion
       },
       defs: defs
     };
@@ -303,4 +305,66 @@ function setDoc(type, doc) {
   if (type instanceof infer.AVal) {
     type.doc = doc;
   }
+}
+
+
+/**
+ * Handles the 'completion' server pass to pick up completion requests inside of
+ * JSDoc comments and goog.require calls and provide completions for qualified
+ * names.
+ * @param {!infer.File} file
+ * @param {number} wordStart
+ * @param {number} wordEnd
+ * @param {fn(prop: string, obj: infer.Obj, depth: number, addInfo: fn(Object))}
+ *     gather Function to add results.
+ */
+function completion(file, wordStart, wordEnd, gather) {
+  var name = getNameAtCursor(file.text, wordEnd);
+  if (!name) {
+    return;
+  }
+  var type = null;
+  if (file.text.charAt(wordEnd - 1) == '.') {
+    // We want the properties of the name.
+    type = typeManager.lookupQualifiedName(name);
+  } else if (name.indexOf('.') >= 0) {
+    // Only provide completions if the string "looks like" a qualified name.
+    // A valid name string with a dot is a simple but effective heuristic.
+    // Strip off the last section to look for completion options - Tern or the
+    // client will filter by the last word.
+    type = typeManager.lookupQualifiedName(
+        name.substring(0, name.lastIndexOf('.')));
+  }
+  if (type) {
+    infer.forAllPropertiesOf(type, gather);
+  }
+}
+
+
+/**
+ * Finds the string for the qualified name at the given cursor position, or null
+ * if none.
+ * @param {string} text The text in which to search.
+ * @param {number} endIndex The index to search backwards from.
+ * @return {?string}
+ */
+function getNameAtCursor(text, endIndex) {
+  var startIndex = endIndex;
+  while (isNameChar(text.charAt(startIndex - 1))) {
+    startIndex--;
+  }
+  var name = text.substring(startIndex, endIndex);
+  // Strip leading and trailing dots.
+  var match = /^\.*(.*?)\.*$/.exec(name);
+  return match && match[1];
+}
+
+
+/**
+ * Whether the given character can be part of a name string.
+ * @param {string} character
+ * @return {boolean}
+ */
+function isNameChar(character) {
+  return character == '.' || acorn.isIdentifierChar(character.charCodeAt(0));
 }
