@@ -80,7 +80,7 @@ exports.initialize = function(ternDir) {
         typeof argNodes[0].value != 'string') {
       return infer.ANull;
     }
-    typeManager.defineQualifiedName(argNodes[0].value);
+    typeManager.defType(argNodes[0].value);
     return infer.ANull;
   });
 
@@ -90,7 +90,7 @@ exports.initialize = function(ternDir) {
         typeof argNodes[0].value != 'string') {
       return infer.ANull;
     }
-    typeManager.defineQualifiedName(argNodes[0].value);
+    typeManager.defType(argNodes[0].value);
     return infer.ANull;
   });
 };
@@ -326,14 +326,13 @@ function completion(file, wordStart, wordEnd, gather) {
   var type = null;
   if (file.text.charAt(wordEnd - 1) == '.') {
     // We want the properties of the name.
-    type = typeManager.lookupQualifiedName(name);
+    type = typeManager.getType(name);
   } else if (name.indexOf('.') >= 0) {
     // Only provide completions if the string "looks like" a qualified name.
     // A valid name string with a dot is a simple but effective heuristic.
     // Strip off the last section to look for completion options - Tern or the
     // client will filter by the last word.
-    type = typeManager.lookupQualifiedName(
-        name.substring(0, name.lastIndexOf('.')));
+    type = typeManager.getType(name.substring(0, name.lastIndexOf('.')));
   }
   if (type) {
     infer.forAllPropertiesOf(type, gather);
