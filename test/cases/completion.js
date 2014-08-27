@@ -26,22 +26,18 @@ goog.provide('test.name2.last2');
 
 /**
  * Test getting completions in comments.
- * TODO: Remove the extra completions for all in-scope variables (Tern patch).
- * @param {test.} //+ blah, name1, name2, ... @17
+ * @param {test.} //+ blah, name1, name2 @17
  * @param {test.b} //+ blah @18
  * @param {test.n} //+ name1, name2 @18
- * TODO: Remove extras.
- * @param {test.name2.} //+ bar, last1, last2, ... @23
+ * @param {test.name2.} //+ bar, last1, last2 @23
  * @param {test.name2.l} //+ last1, last2 @24
  * @param {test.name2.b} //+ bar @24
  */
 
 // Test completing names in strings.
-// TODO: Remove extras.
-'test.'; //+ blah, name1, name2, ... @7
+'test.'; //+ blah, name1, name2 @7
 'test.b'; //+ blah @8
 'test.n'; //+ name1, name2 @8
-// TODO: Remove extras.
-'test.name2.'; //+ bar, last1, last2, ... @13
+'test.name2.'; //+ bar, last1, last2 @13
 'test.name2.l'; //+ last1, last2 @14
 'test.name2.b'; //+ bar @14

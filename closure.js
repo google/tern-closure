@@ -68,7 +68,8 @@ exports.initialize = function(ternDir) {
       passes: {
         'postParse': postParse,
         'postInfer': postInfer,
-        'completion': completion
+        'completion': completion,
+        'memberCompletion': completion
       },
       defs: defs
     };
@@ -309,9 +310,9 @@ function setDoc(type, doc) {
 
 
 /**
- * Handles the 'completion' server pass to pick up completion requests inside of
- * JSDoc comments and goog.require calls and provide completions for qualified
- * names.
+ * Handles the 'completion' and 'memberCompletion' server passes to pick up
+ * completion requests inside of JSDoc comments and goog.require calls and
+ * provide completions for qualified names.
  * @param {!infer.File} file
  * @param {number} wordStart
  * @param {number} wordEnd
