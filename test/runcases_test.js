@@ -12,8 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+'use strict';
+
+/*global describe,it */
+
 var expect = require('chai').expect;
 
+// Wrap the script that runs the Tern test framework cases in a Mocha test.
 describe('The Tern framework test cases', function() {
   it('should all pass.', function(done) {
     var child = require('child_process').fork(require.resolve('./runcases.js'));

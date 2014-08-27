@@ -16,6 +16,10 @@
 
 var acorn = require('acorn/acorn');
 var walk = require('acorn/util/walk');
+
+var File = require('./lib/file'),
+    Reason = File.Reason,
+    Visibility = File.Visibility;
 var core = require('./lib/core');
 // We defer loading of modules that depend on core Tern modules until after the
 // core module is initialized.
@@ -82,8 +86,7 @@ exports.initialize = function(ternDir) {
         typeof argNodes[0].value != 'string') {
       return infer.ANull;
     }
-    typeManager.defType(argNodes[0].value, TypeManager.Reason.PROVIDE,
-        TypeManager.Visibility.PUBLIC);
+    typeManager.defType(argNodes[0].value, Reason.PROVIDE, Visibility.PUBLIC);
     return infer.ANull;
   });
 
@@ -93,8 +96,7 @@ exports.initialize = function(ternDir) {
         typeof argNodes[0].value != 'string') {
       return infer.ANull;
     }
-    typeManager.defType(argNodes[0].value, TypeManager.Reason.REQUIRE,
-        TypeManager.Visibility.PRIVATE);
+    typeManager.defType(argNodes[0].value, Reason.REQUIRE, Visibility.PRIVATE);
     return infer.ANull;
   });
 };
@@ -156,9 +158,7 @@ function postParse(ast, text) {
  * @param {!infer.Scope} scope
  */
 function postInfer(ast, scope) {
-  if (debug) {
-    console.log('closure: postInfer ' + infer.cx().curOrigin);
-  }
+  typeManager.openFile(infer.cx().curOrigin);
   walk.simple(ast, {
     VariableDeclaration: function(node, scope) {
       interpretComments(node, node._closureComment,

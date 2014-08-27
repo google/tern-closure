@@ -12,8 +12,9 @@
     "tern": "^0.7.0"
   },
   "devDependencies": {
+    "chai": "^1.9.1",
     "mocha": "^1.21.4",
-    "chai": "^1.9.1"
+    "sinon-chai": "^2.5.0"
   },
   "repository": {
     "type": "git",
