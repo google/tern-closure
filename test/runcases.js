@@ -14,6 +14,7 @@
 
 var path = require('path');
 var runcases = require('tern/test/runcases');
+var util = require('tern/test/util');
 var closure = require('../closure');
 // Locate the Tern distribution installed with this repo and initialize the
 // tern-closure plugin.
@@ -23,3 +24,5 @@ closure.initialize(ternDir);
 var filter = process.argv[2];
 var caseDir = path.resolve(__dirname, 'cases');
 runcases.runTests(filter, caseDir);
+// Set non-zero exit code on failure.
+process.exit(util.hasFailed());
