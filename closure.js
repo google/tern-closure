@@ -69,7 +69,8 @@ exports.initialize = function(ternDir) {
         'postParse': postParse,
         'postInfer': postInfer,
         'completion': completion,
-        'memberCompletion': completion
+        'memberCompletion': completion,
+        'typeAt': typeAt
       },
       defs: defs
     };
@@ -342,16 +343,43 @@ function completion(file, wordStart, wordEnd, gather) {
 
 
 /**
+ * Handles the 'typeAt' server pass to provide types for query positions like
+ * JSDoc tags and goog.require strings.
+ * @param {tern.File} file The Tern file object for the queried file.
+ * @param {number} end The end position for the query.
+ * @param {acorn.Found} expr The expression found at the given position.
+ * @param {infer.AVal} type The current type for the given position.
+ * @return {infer.AVal} The new type for the current position.
+ */
+function typeAt(file, end, expr, type) {
+  // Only look up a name if Tern found no type, or this is a string literal.
+  if (!type || (type == infer.cx().str && expr.node.type == 'Literal')) {
+    var name = getNameAtCursor(file.text, end, true /* expandForward */);
+    var nameType = typeManager.getType(name);
+    if (nameType) {
+      type = nameType;
+      infer.resetGuessing();
+    }
+  }
+  return type;
+}
+
+
+/**
  * Finds the string for the qualified name at the given cursor position, or null
  * if none.
  * @param {string} text The text in which to search.
  * @param {number} endIndex The index to search backwards from.
+ * @param {boolean=} expandForward Whether to expand the name forward.
  * @return {?string}
  */
-function getNameAtCursor(text, endIndex) {
+function getNameAtCursor(text, endIndex, expandForward) {
   var startIndex = endIndex;
   while (isNameChar(text.charAt(startIndex - 1))) {
     startIndex--;
+  }
+  while (expandForward && isNameChar(text.charAt(endIndex))) {
+    endIndex++;
   }
   var name = text.substring(startIndex, endIndex);
   // Strip leading and trailing dots.
