@@ -1,6 +1,6 @@
 {
   "name": "tern-closure",
-  "version": "0.1.3-dev",
+  "version": "0.1.3",
   "description": "A Tern plugin adding support for Closure.",
   "main": "closure.js",
   "dependencies": {
