@@ -29,7 +29,7 @@
     "closure"
   ],
   "scripts": {
-    "test": "node ./test/runcases.js"
+    "test": "node_modules/mocha/bin/mocha"
   },
   "author": "Josh Giles <joshgiles@google.com>"
 }
