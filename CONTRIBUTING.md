@@ -20,6 +20,10 @@ tern-closure has two kinds of tests:
    [Sinon][sinon] for spies/stubs, and [sinon-chai][sinon-chai] for making them
    play together. These tests are in  `test/*_test.js` files.
 
+The Tern framework test cases are very useful for testing interactions with
+Tern's type inference system and server queries, while the Mocha tests are
+better for other functionality (like file and visibility management).
+
 To run the Tern framework tests directly, run:
 
 ```
@@ -34,11 +38,11 @@ or, if you don't have Mocha installed globally
 ```
 ./node_modules/.bin/mocha
 ```
-which offers all of Mocha's amenities (`-w`, `--growl`, etc).
+Mocha provides many amenities (`-w`, `--growl`, etc).
 
 
 `test/runcases_test.js` wraps the Tern framework tests in a Mocha test case, so
-running all the Mocha also runs the Tern framework test cases.
+running all the Mocha tests also runs the Tern framework test cases.
 
 You can also just run all the tests with
 ```

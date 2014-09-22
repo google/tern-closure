@@ -32,10 +32,9 @@ and not within a browser.
 
 ### Short version
 
-After installing Tern according the setup instructions of the [editor
-plugin][tern-editor] you need), go to the place where the [Tern
-package][tern-npm] was installed (or the [Tern repo][tern-repo] was cloned) and
-run
+After installing Tern according the setup instructions of your desired [editor
+plugin][tern-editor], go to the place where the [Tern package][tern-npm] was
+installed (or the [Tern repo][tern-repo] was cloned) and run
 
 ```
 $ npm install tern-closure
@@ -86,13 +85,16 @@ your editor plugin starts your Tern server).
 
 ### Options
 
+You can set the following options in the `closure` section of your Tern
+configuration file:
+
  * `finder` *Object*. Configuration for finding the files that provide types.
-   See [Finders](#finder) below. *Optional. Default: None.*
+   See [Finders](#finders) below. *Optional. Default: None.*
  * `debug` *boolean*. Whether tern-closure should print debug output. *Optional.
    Default: Match Tern `debug` option.*
- * `noMinimalLoad` *boolean*. Disables attempts to limit loaded files according
-   to visibility. This is mostly for debugging - if setting this fixes an issue,
-   file a bug. *Optional. Default: `false`*.
+ * `noMinimalLoad` *boolean*. When a finder is active, this disables attempts to
+   limit loaded files according to visibility. This is mostly for debugging - if
+   setting this fixes an issue, file a bug. *Optional. Default: `false`*.
 
 ### <a name="finders"></a> Finders 
 
