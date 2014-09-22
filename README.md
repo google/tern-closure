@@ -1,31 +1,64 @@
 # tern-closure
 
 [tern-closure][tern-closure] is a plugin which adds support for [Closure
-Compiler annotations][compiler] and the [Closure Library][library] to the
-Javascript code intelligence system [Tern][tern].
+Compiler annotations][compiler] and the Closure type system to the JavaSript
+code intelligence system [Tern][tern].
 
-## Installation
+To use tern-closure, you need to [install](#installation) it and then
+[configure](#configuration) Tern to load it.
+
+## Features
+
+tern-closure adds the following features to your Tern installation:
+
+1. Understanding of types in JSDoc type annotations (similar to the
+   [doc_comment plugin][doc_comment] included with Tern).
+2. Understanding of inheritance and interfaces with `@extends` and
+   `@implements`.
+3. Completion and go-to-definition support for type names in JSDoc comments and
+   in strings (e.g. `@type` annotations and `goog.require` arguments).
+4. Automatic loading of the definitions for types, so that you get completion
+   and type information from other files and can jump to definitions in those
+   files. This requires enabling a [finder](#finders). We consider access
+   modifiers and how types are used in order to load only the types relevant
+   the files you are editing, keeping this feature feasible even for large
+   projects.
+
+
+## <a name="installation"></a> Installation
 
 Currently, tern-closure only works with the NodeJS [Tern Server][tern-server],
 and not within a browser.
 
-The easiest way to install tern-closure is to use a recent version of
-[npm][npm]. In the directory where you installed the [tern package][tern-npm],
-simply run
+### Short version
+
+After installing Tern according the setup instructions of the [editor
+plugin][tern-editor] you need), go to the place where the [Tern
+package][tern-npm] was installed (or the [Tern repo][tern-repo] was cloned) and
+run
 
 ```
 $ npm install tern-closure
 ```
+Or, if you're not sure where Tern was installed, you can try
+```
+$ npm install -g tern-closure
+```
 
-<!-- TODO: Mention global installation once supported. -->
-<!-- TODO: Rundown of setup with common plugins. -->
+### Long version
 
-## Configuration
+See [INSTALL.md](INSTALL.md) for instructions tailored to each editor.
+
+## <a name="configuration"></a> Configuration
 
 In order for Tern to load the tern-closure plugin once it is installed, you must
 include `closure` in the `plugins` section of your [Tern configuration
-file][tern-config]. You must also explicitly disable the default `doc_comment`
-plugin, which will interfere with tern-closure.
+file][tern-config]. The configuration file can be either a file named
+`.tern-project` in your project's root directory, or `.tern-config` in your home
+directory.
+
+You must also explicitly disable the default `doc_comment` plugin, which will
+interfere with tern-closure.
 
 Here is a minimal example `.tern-project` configuration file:
 
@@ -38,13 +71,30 @@ Here is a minimal example `.tern-project` configuration file:
 }
 ```
 
-### Options
- * `finder` Configuration for finding the files that provide types. See
-   [Finders][finders] below. *Optional. Default: None.*
- * `debug` Whether tern-closure should print debug output. *Optional. Default:
-   Match Tern `debug` option.*
+<a name="project-dir"></a>
+#### "Project directory" and `.tern-project` vs `.tern-config`
 
-### Finders
+Tern looks for `.tern-project` first, walking up the directory tree, and uses
+its location as the "project directory". If no `.tern-project` is found, your
+`.tern-config` is loaded instead, and *the working directory of the Tern server
+process is used as the "project directory"*.
+
+Since Tern and tern-closure (including finders like [grep](#grep)) use the
+"project directory" as the base for all relative paths, you should either use
+`.tern-project` or be careful about where you start your Tern server (or, where
+your editor plugin starts your Tern server).
+
+### Options
+
+ * `finder` *Object*. Configuration for finding the files that provide types.
+   See [Finders](#finder) below. *Optional. Default: None.*
+ * `debug` *boolean*. Whether tern-closure should print debug output. *Optional.
+   Default: Match Tern `debug` option.*
+ * `noMinimalLoad` *boolean*. Disables attempts to limit loaded files according
+   to visibility. This is mostly for debugging - if setting this fixes an issue,
+   file a bug. *Optional. Default: `false`*.
+
+### <a name="finders"></a> Finders 
 
 tern-closure uses "finders" to find the files providing Closure names via
 `goog.provide`. Finders allow tern-closure to load and interpret the files
@@ -55,26 +105,28 @@ The `finder` section of the options object for `closure` in your `.tern-project`
 file specifies what finder implementation you want to use, and what options you
 want to pass to the finder. By default, no finder is used, and files are not
 automatically loaded. Currently, only one finder implementation is included with
-tern-closure, `grep`.
+tern-closure, [grep](#grep).
 
 *Common finder options:*
+
  * `name` The name of the finder you want to use. *Required.*
  * `debug` Whether the finder should print debug output. *Optional. Default:
    Match tern-closure `debug` option.*
 
-#### grep
+#### <a name="grep"></a> grep
 
-`grep` is a basic finder which uses the `grep` command-line utility to search
-for `goog.provide` statements at startup and create a map of Closure names to
-providing files.
+This is a basic finder which uses the `grep` command-line utility (or `findstr`
+in Windows) to search for `goog.provide` statements at startup and create a map
+of Closure names to providing files.
 
 *Options:*
 
  * `dirs` An array of path strings indicating which directories to search for
-   files. Paths can either be absolute, or relative to the project directory.
-   *Optional. Default: `['.']` (just the project directory).*
+   files. Paths can either be absolute, or relative to the [project
+   directory](#project-dir).  *Optional. Default: `['.']` (just the project
+   directory).*
 
-Here is an example `.tern-project` file:
+Here is an example `.tern-project` file using the grep finder:
 
 ```json
 {
@@ -127,19 +179,19 @@ page][tern-closure-issues] of the tern-closure repository.
 ## Contributing
 
 Pull requests to tern-closure are welcome. Please see the
-[CONTRIBUTING.md][contributing] file for requirements and guidelines.
+[CONTRIBUTING.md](CONTRIBUTING.md) file for requirements and guidelines.
 
 Disclaimer: tern-closure is not an official Google product, and is maintained on
 a best-effort basis.
 
-[tern-closure]: https://github.com/google/tern-closure
-[tern-closure-issues]: https://github.com/google/tern-closure/issues
-[tern]: http://ternjs.net
-[tern-server]: http://ternjs.net/doc/manual.html#server
 [compiler]: https://developers.google.com/closure/compiler/docs/js-for-compiler
-[library]: https://developers.google.com/closure/library/
+[doc_comment]: http://ternjs.net/doc/manual.html#plugin_doc_comment
 [npm]: https://www.npmjs.org/
-[tern-npm]: https://www.npmjs.org/package/tern
+[tern-closure-issues]: https://github.com/google/tern-closure/issues
+[tern-closure]: https://github.com/google/tern-closure
 [tern-config]: http://ternjs.net/doc/manual.html#configuration
-[finders]: https://github.com/google/tern-closure#finders
-[contributing]: https://github.com/google/tern-closure/blob/master/CONTRIBUTING.md
+[tern-editor]: http://ternjs.net/doc/manual.html#editor
+[tern-npm]: https://www.npmjs.org/package/tern
+[tern-repo]: https://github.com/marijnh/tern
+[tern-server]: http://ternjs.net/doc/manual.html#server
+[tern]: http://ternjs.net
