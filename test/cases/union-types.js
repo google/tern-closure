@@ -1,4 +1,4 @@
-// Type unions
+// Union Types
 // plugin=closure
 // plugin=doc_comment null
 
