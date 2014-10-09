@@ -1,9 +1,6 @@
 {
   "!name": "union-types.js",
-  "varPropagate": {
-    "!span": "87[6:4]-99[6:16]",
-    "!type": "(number|string)"
-  },
+  "varPropagate": "varWithUnionAnnotation",
   "varWithUnionAnnotation": {
     "!span": "51[3:4]-73[3:26]",
     "!type": "(number|string)"
