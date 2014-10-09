@@ -7,7 +7,7 @@ var union;
 union; //: (number|string)
 
 
-// observe that some completions are coming from the type number such as
+// Observe that some completions are coming from the number type such as
 // Number.prototype.toExponential and others, such as charAt are coming
-// from String.prototype
+// from String.prototype.
 union. //+ toString, toFixed, toExponential, charAt, charCodeAt, indexOf, ...
