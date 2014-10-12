@@ -34,9 +34,18 @@ If you are using [tern_for_gedit][tern_for_gedit], you need to install
 tern-closure globally (in addition to installing Tern globally as per the
 tern_for_gedit README): `npm install -g tern-closure`
 
+## Eclipse
+
+To use tern-closure in Eclipse, follow [these
+instructions][eclipse-tern-closure] for setting up tern-closure with
+[tern.java][tern-java].
+
+
+[eclipse-tern-closure]: https://github.com/angelozerr/tern.java/wiki/Tern-&-Closure-support
 [emacs-install]: http://ternjs.net/doc/manual.html#emacs
 [nvm]: https://github.com/creationix/nvm
 [sublime-tern-alt]: https://github.com/emmetio/sublime-tern
+[tern-java]: https://github.com/angelozerr/tern.java
 [tern_for_gedit]: https://github.com/Swatinem/tern_for_gedit
 [tern_for_sublime]: https://github.com/marijnh/tern_for_sublime
 [tern_for_vim]: https://github.com/marijnh/tern_for_vim
