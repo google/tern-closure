@@ -24,11 +24,11 @@ var chai = require('chai'),
     sinonChai = require('sinon-chai');
 chai.use(sinonChai);
 
-require('lib/core').initializeForTesting();
+require('../lib/core').initializeForTesting();
 
 var infer = require('tern/lib/infer'),
-    TypeManager = require('lib/typemanager'),
-    File = require('lib/file'),
+    TypeManager = require('../lib/typemanager'),
+    File = require('../lib/file'),
     Visibility = File.Visibility,
     Reason = File.Reason,
     Server = require('tern/lib/tern').Server;

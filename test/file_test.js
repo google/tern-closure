@@ -24,7 +24,7 @@ var chai = require('chai'),
     sinonChai = require('sinon-chai');
 chai.use(sinonChai);
 
-var File = require('lib/file'),
+var File = require('../lib/file'),
     Visibility = File.Visibility,
     Reason = File.Reason;
 
