@@ -29,7 +29,7 @@
     "closure"
   ],
   "scripts": {
-    "test": "node_modules/mocha/bin/mocha"
+    "test": "mocha"
   },
   "author": "Josh Giles <joshgiles@google.com>"
 }
