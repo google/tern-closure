@@ -29,11 +29,11 @@ nonNullable;//: MyClass
 // Unions #18
 /** @type {(MyClass|YourClass)} */
 var union;
-union;//: YourClass
+union;//: MyClass
 
 /** @type {(!MyClass|!YourClass|{prop:(Blah|Blam)})} */
 var nested;
-nested; //: YourClass
+nested; //: MyClass
 
 // Optional parameters #19.
 /** @param {ParamType=} opt_param */

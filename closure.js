@@ -350,6 +350,8 @@ function completion(file, wordStart, wordEnd, gather) {
 /**
  * Handles the 'typeAt' server pass to provide types for query positions like
  * JSDoc tags and goog.require strings.
+ * TODO: Patch Tern to not crash on null expr when we return a type (e.g.
+ * inside comments). Restore typeAt tests.
  * @param {tern.File} file The Tern file object for the queried file.
  * @param {number} end The end position for the query.
  * @param {acorn.Found} expr The expression found at the given position.

@@ -26,6 +26,11 @@ closure.initialize(ternDir);
 
 var filter = process.argv[2];
 var caseDir = path.resolve(__dirname, 'cases');
-runcases.runTests(filter, caseDir);
+try {
+  runcases.runTests(filter, caseDir);
+} catch (e) {
+  // Ensure that exceptions count as failures.
+  util.failure(e);
+}
 // Set non-zero exit code on failure.
 process.exit(util.hasFailed());
