@@ -17,8 +17,8 @@
 
 'use strict';
 
-var acorn = require('acorn/acorn');
-var walk = require('acorn/util/walk');
+var acorn = require('acorn');
+var walk = require('acorn/dist/walk');
 
 var File = require('./lib/file'),
     Reason = File.Reason,
@@ -75,7 +75,7 @@ exports.initialize = function(ternDir) {
       passes: {
         'postParse': postParse,
         'postInfer': postInfer,
-        'completion': completion,
+        'variableCompletion': completion,
         'memberCompletion': completion,
         'typeAt': typeAt
       },
