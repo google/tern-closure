@@ -177,7 +177,9 @@ function postInfer(ast, scope) {
     },
     ObjectExpression: function(node) {
       for (var i = 0; i < node.properties.length; ++i) {
-        var prop = node.properties[i], key = prop.key, propName = key && (key.name || key.value);
+        var prop = node.properties[i],
+          key = prop.key,
+          propName = key && String(key.name || key.value);
         if (propName) interpretComments(
             prop, key._closureComment, node.objType.getProp(propName));
       }
