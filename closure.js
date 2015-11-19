@@ -177,9 +177,9 @@ function postInfer(ast, scope) {
     },
     ObjectExpression: function(node) {
       for (var i = 0; i < node.properties.length; ++i) {
-        var prop = node.properties[i], key = prop.key;
-        interpretComments(
-            prop, key._closureComment, node.objType.getProp(key.name));
+        var prop = node.properties[i], key = prop.key, propName = key && (key.name || key.value);
+        if (propName) interpretComments(
+            prop, key._closureComment, node.objType.getProp(propName));
       }
     },
     MemberExpression: function(node, scope) {
