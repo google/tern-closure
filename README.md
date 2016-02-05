@@ -1,5 +1,8 @@
 # tern-closure
 
+[![Build Status](https://secure.travis-ci.org/google/tern-closure.png)](http://travis-ci.org/google/tern-closure)
+[![NPM version](https://img.shields.io/npm/v/tern-closure.svg)](https://www.npmjs.org/package/tern-closure)
+
 [tern-closure][tern-closure] is a plugin which adds support for [Closure
 Compiler annotations][compiler] and the Closure type system to the JavaSript
 code intelligence system [Tern][tern].
