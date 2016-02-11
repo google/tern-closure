@@ -177,9 +177,11 @@ function postInfer(ast, scope) {
     },
     ObjectExpression: function(node) {
       for (var i = 0; i < node.properties.length; ++i) {
-        var prop = node.properties[i], key = prop.key;
-        interpretComments(
-            prop, key._closureComment, node.objType.getProp(key.name));
+        var prop = node.properties[i],
+          key = prop.key,
+          propName = key && String(key.name || key.value);
+        if (propName) interpretComments(
+            prop, key._closureComment, node.objType.getProp(propName));
       }
     },
     MemberExpression: function(node, scope) {
@@ -275,7 +277,9 @@ function applyFnTypeInfo(fnType, comment) {
   }
 }
 
-
+function isFunExpr(node) {
+  return node.type == 'FunctionExpression' || node.type == 'ArrowFunctionExpression';
+}
 /**
  * If the given node is associated with a function, gets the type value for the
  * function.
@@ -285,17 +289,16 @@ function applyFnTypeInfo(fnType, comment) {
 function getFnType(node) {
   if (node.type == 'VariableDeclaration') {
     var decl = node.declarations[0];
-    if (decl.init && decl.init.type == 'FunctionExpression') {
-      return decl.init.body.scope.fnType;
+    if (decl.init && isFunExpr(decl.init)) {
+      return decl.init.scope.fnType;
     }
   } else if (node.type == 'FunctionDeclaration') {
-    return node.body.scope.fnType;
-  } else if (node.type == 'AssignmentExpression' &&
-      node.right.type == 'FunctionExpression') {
-    return node.right.body.scope.fnType;
-  } else if (node.value && node.value.type == 'FunctionExpression') {
+    return node.scope.fnType;
+  } else if (node.type == 'AssignmentExpression' && isFunExpr(node.right)) {
+    return node.right.scope.fnType;
+  } else if (node.value && isFunExpr(node.value)) {
     // Object property.
-    return node.value.body.scope.fnType;
+    return node.value.scope.fnType;
   }
   return null;
 }
