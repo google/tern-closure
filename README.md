@@ -1,7 +1,7 @@
 # tern-closure
 
 [tern-closure][tern-closure] is a plugin which adds support for [Closure
-Compiler annotations][compiler] and the Closure type system to the JavaSript
+Compiler annotations][compiler] and the Closure type system to the JavaScript
 code intelligence system [Tern][tern].
 
 To use tern-closure, you need to [install](#installation) it and then
