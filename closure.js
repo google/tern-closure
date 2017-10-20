@@ -286,16 +286,16 @@ function getFnType(node) {
   if (node.type == 'VariableDeclaration') {
     var decl = node.declarations[0];
     if (decl.init && decl.init.type == 'FunctionExpression') {
-      return decl.init.body.scope.fnType;
+      return decl.init.scope.fnType;
     }
   } else if (node.type == 'FunctionDeclaration') {
-    return node.body.scope.fnType;
+    return node.scope.fnType;
   } else if (node.type == 'AssignmentExpression' &&
       node.right.type == 'FunctionExpression') {
-    return node.right.body.scope.fnType;
+    return node.right.scope.fnType;
   } else if (node.value && node.value.type == 'FunctionExpression') {
     // Object property.
-    return node.value.body.scope.fnType;
+    return node.value.scope.fnType;
   }
   return null;
 }

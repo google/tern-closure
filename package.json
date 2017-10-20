@@ -9,7 +9,7 @@
     "doctrine": "^0.5.2"
   },
   "peerDependencies": {
-    "tern": "^0.13.0"
+    "tern": "^0.20.0"
   },
   "devDependencies": {
     "chai": "^1.9.1",
